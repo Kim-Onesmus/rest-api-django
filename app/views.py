@@ -7,12 +7,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 @api_view(['GET', 'POST'])
-def drink_list(request):
+def drink_list(request, format=None):
 
     if request.method == 'GET':
         drinks = Drinks.objects.all()
         serializer = DrinkSerializer(drinks, many=True)
-        return JsonResponse({'drinks':serializer.data})
+        return Response(serializer.data)
     if request.method == 'POST':
         serializer = DrinkSerializer(data=request.data)
         if serializer.is_valid():
@@ -20,7 +20,7 @@ def drink_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'PUT', 'DELETE'])        
-def drink_details(request, id):
+def drink_details(request, id, format=None):
     try:
         drink = Drinks.objects.get(pk=id)
     except Drinks.DoesNotExist:
@@ -36,5 +36,6 @@ def drink_details(request, id):
             return Response(serlializer.data)
         return Response(serlializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        pass 
+        drink.delete
+        return Response(status=status.HTTP_304_NOT_MODIFIED)
 
