@@ -21,13 +21,20 @@ def drink_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])        
 def drink_details(request, id):
-
-    drink = Drinks.objects.get(pk=id)
-
+    try:
+        drink = Drinks.objects.get(pk=id)
+    except Drinks.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
     if request.method == 'GET':
-        serlializer = DrinkSerializer
-
-    elif request.method == 'DELETE':
-        pass
+        serlializer = DrinkSerializer(drink)
+        return Response({'drink':serlializer.data})
     elif request.method == 'PUT':
-        pass
+        serlializer = DrinkSerializer(drink, data=request.data)
+        if serlializer.is_valid():
+            serlializer.save()
+            return Response(serlializer.data)
+        return Response(serlializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        pass 
+
