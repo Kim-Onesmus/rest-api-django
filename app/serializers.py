@@ -3,4 +3,5 @@ from .models import Drinks
 
 class DrinkSerializer(serializers.ModelSerializer):
     class Meta:
-        modal = Drinks
+        model = Drinks
+        fields = ['id', 'name', 'description']
